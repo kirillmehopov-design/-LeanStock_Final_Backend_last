@@ -52,23 +52,6 @@ if (env.JWT_ACCESS_SECRET.length < 32 || env.JWT_REFRESH_SECRET.length < 32) {
   throw new Error('JWT secrets must be at least 32 characters long.');
 }
 
-if (env.NODE_ENV !== 'test' && env.EMAIL_PROVIDER === 'mock') {
-  throw new Error('EMAIL_PROVIDER=mock is allowed only for automated tests. Use EMAIL_PROVIDER=smtp or EMAIL_PROVIDER=resend for local defense and production so emails arrive in a real inbox.');
-}
-
-if (env.NODE_ENV !== 'test' && env.EMAIL_PROVIDER === 'smtp') {
-  const missingSmtp = [];
-  if (!env.SMTP_HOST) missingSmtp.push('SMTP_HOST');
-  if (!env.SMTP_USER) missingSmtp.push('SMTP_USER');
-  if (!env.SMTP_PASS) missingSmtp.push('SMTP_PASS');
-  if (missingSmtp.length) {
-    throw new Error(`EMAIL_PROVIDER=smtp requires ${missingSmtp.join(', ')}. Configure your .env with a real Gmail App Password or another SMTP provider.`);
-  }
-}
-
-if (env.NODE_ENV !== 'test' && env.EMAIL_PROVIDER === 'resend' && !env.RESEND_API_KEY) {
-  throw new Error('EMAIL_PROVIDER=resend requires RESEND_API_KEY or EMAIL_API_KEY.');
-}
 
 export const corsOrigins = env.CORS_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean);
 
