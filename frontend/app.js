@@ -1,6 +1,7 @@
+
 const ROLES = ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR', 'SUPERADMIN'];
 const TENANT_ROLES = ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'];
-
+ 
 const DEFAULT_ACCOUNTS = {
   OWNER: {
     email: 'owner@example.com', username: 'owner_01', password: 'StrongPass123', tenantName: 'Dostyk Mini Market'
@@ -18,7 +19,7 @@ const DEFAULT_ACCOUNTS = {
     email: 'superadmin@example.com', username: 'superadmin_01', password: 'StrongPass123', setupKey: 'local-super-admin-setup-key'
   }
 };
-
+ 
 const PERMISSIONS = {
   OWNER: 'Full tenant control',
   MANAGER: 'Operational management',
@@ -26,7 +27,7 @@ const PERMISSIONS = {
   AUDITOR: 'Read-only audit/reporting',
   SUPERADMIN: 'Platform-level tenant control'
 };
-
+ 
 const PAGES = {
   overview: {
     title: 'Dashboard',
@@ -66,28 +67,28 @@ const PAGES = {
     roles: ['OWNER', 'MANAGER', 'AUDITOR', 'SUPERADMIN']
   }
 };
-
+ 
 const ACTION_ROLES = {
   refreshCurrentToken: ROLES,
   logoutCurrent: ROLES,
-
+ 
   createWarehouseA: ['OWNER', 'MANAGER'],
   createWarehouseB: ['OWNER', 'MANAGER'],
   updateWarehouseA: ['OWNER', 'MANAGER'],
   updateWarehouseB: ['OWNER', 'MANAGER'],
   listWarehouses: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
-
+ 
   createSupplier: ['OWNER', 'MANAGER'],
   createCategory: ['OWNER', 'MANAGER'],
   listSuppliers: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
   listCategories: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
-
+ 
   createProduct: ['OWNER', 'MANAGER'],
   updateProductRules: ['OWNER', 'MANAGER'],
   archiveProduct: ['OWNER', 'MANAGER'],
   listProducts: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
   getProductDetails: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
-
+ 
   receiveInventory: ['OWNER', 'MANAGER', 'STAFF'],
   triggerLowStockEmailDemo: ['OWNER', 'MANAGER'],
   adjustInventory: ['OWNER', 'MANAGER'],
@@ -96,24 +97,24 @@ const ACTION_ROLES = {
   rejectInventoryIssue: ['OWNER', 'MANAGER'],
   listInventoryIssues: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
   inventorySnapshot: ['OWNER', 'MANAGER', 'AUDITOR'],
-
+ 
   createReservation: ['OWNER', 'MANAGER', 'STAFF'],
   confirmReservation: ['OWNER', 'MANAGER', 'STAFF'],
   listReservations: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
-
+ 
   createTransfer: ['OWNER', 'MANAGER', 'STAFF'],
   approveTransfer: ['OWNER', 'MANAGER'],
   dispatchTransfer: ['OWNER', 'MANAGER', 'STAFF'],
   receiveTransfer: ['OWNER', 'MANAGER', 'STAFF'],
   cancelTransfer: ['OWNER', 'MANAGER'],
   listTransfers: ['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'],
-
+ 
   createPurchaseOrder: ['OWNER', 'MANAGER'],
   confirmPurchaseOrder: ['OWNER', 'MANAGER'],
   cancelPurchaseOrder: ['OWNER', 'MANAGER'],
   listPurchaseOrders: ['OWNER', 'MANAGER', 'AUDITOR'],
   listSales: ['OWNER', 'MANAGER', 'AUDITOR'],
-
+ 
   lowStock: ['OWNER', 'MANAGER', 'AUDITOR'],
   deadStockReport: ['OWNER', 'MANAGER', 'AUDITOR'],
   forecast: ['OWNER', 'MANAGER', 'AUDITOR'],
@@ -123,7 +124,7 @@ const ACTION_ROLES = {
   triggerDeadStock: ['OWNER', 'MANAGER'],
   queueStatus: ['OWNER', 'MANAGER', 'AUDITOR'],
   auditLogs: ['OWNER', 'MANAGER', 'AUDITOR'],
-
+ 
   platformTenants: ['SUPERADMIN'],
   platformMetrics: ['SUPERADMIN'],
   platformAuditLogs: ['SUPERADMIN'],
@@ -131,10 +132,10 @@ const ACTION_ROLES = {
   reactivateTenant: ['SUPERADMIN'],
   forcePasswordReset: ['SUPERADMIN']
 };
-
+ 
 const state = loadState();
 let logs = [];
-
+ 
 function loadState() {
   const saved = JSON.parse(localStorage.getItem('leanstockFinalState') || '{}');
   return {
@@ -162,35 +163,35 @@ function loadState() {
     ownerUserId: saved.ownerUserId || ''
   };
 }
-
+ 
 function persist() {
   localStorage.setItem('leanstockFinalState', JSON.stringify(state));
 }
-
+ 
 const $ = (id) => document.getElementById(id);
 const value = (id) => $(id)?.value?.trim() || '';
 const numberValue = (id) => Number(value(id));
 const setValue = (id, val) => { if ($(id) && val !== undefined && val !== null) $(id).value = val; };
-
+ 
 function apiBase() {
   return value('apiBase').replace(/\/$/, '');
 }
-
+ 
 function rootUrl() {
   return apiBase().replace(/\/api\/v1$/, '');
 }
-
+ 
 function normalizeError(error) {
   if (error?.body?.message) return error.body.message;
   if (error?.body?.error) return error.body.error;
   if (error?.body?.code) return error.body.code;
   return error?.message || 'Unknown error';
 }
-
+ 
 function pretty(data) {
   return typeof data === 'string' ? data : JSON.stringify(data, null, 2);
 }
-
+ 
 function output(data) {
   const out = $('out');
   if (!out) return;
@@ -200,14 +201,14 @@ function output(data) {
   }
   out.textContent = pretty(data);
 }
-
+ 
 function pushLog(type, title, message, data) {
   const entry = { type, title, message, time: new Date().toLocaleTimeString(), data };
   logs.unshift(entry);
   logs = logs.slice(0, 25);
   renderLogs();
 }
-
+ 
 function toast(type, title, message) {
   const zone = $('toastZone');
   const node = document.createElement('div');
@@ -217,13 +218,13 @@ function toast(type, title, message) {
   setTimeout(() => node.remove(), 5200);
   pushLog(type, title, message);
 }
-
+ 
 function escapeHtml(str) {
   return String(str ?? '').replace(/[&<>'"]/g, (ch) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;'
   }[ch]));
 }
-
+ 
 function renderLogs() {
   const list = $('logList');
   if (!list) return;
@@ -240,34 +241,34 @@ function renderLogs() {
     `).join('')
     : '<div class="log-item"><strong>No notifications yet</strong><div>Run any action to see frontend notifications.</div></div>';
 }
-
+ 
 function getPageFromLocation() {
   const raw = (window.location.hash || '#/overview').replace(/^#\/?/, '');
   const page = raw.split('?')[0] || 'overview';
   if (page === 'password-reset') return 'auth';
   return PAGES[page] ? page : 'overview';
 }
-
+ 
 function hashParams() {
   const raw = window.location.hash || '';
   const query = raw.includes('?') ? raw.slice(raw.indexOf('?') + 1) : window.location.search.replace(/^\?/, '');
   return new URLSearchParams(query);
 }
-
+ 
 function isLoggedIn(role = state.activeRole) {
   return Boolean(activeToken(role));
 }
-
+ 
 function canAccessPage(page = state.activePage, role = state.activeRole) {
   const config = PAGES[page] || PAGES.overview;
   if (config.public) return true;
   return isLoggedIn(role) && config.roles.includes(role);
 }
-
+ 
 function canSeeResponseLogs(role = state.activeRole) {
   return isLoggedIn(role) && PAGES.response.roles.includes(role);
 }
-
+ 
 function requireFrontendRole(allowedRoles, featureName) {
   if (!isLoggedIn()) {
     toast('warn', featureName, `Login as ${state.activeRole} first.`);
@@ -280,7 +281,7 @@ function requireFrontendRole(allowedRoles, featureName) {
   output({ error: 'FRONTEND_RBAC_BLOCKED', activeRole: state.activeRole, allowedRoles });
   return false;
 }
-
+ 
 function setPage(page, replace = false) {
   const next = PAGES[page] ? page : 'overview';
   state.activePage = next;
@@ -290,14 +291,14 @@ function setPage(page, replace = false) {
   else if (window.location.hash !== url) window.location.hash = url;
   renderPage();
 }
-
-
+ 
+ 
 function applyActionVisibility() {
   document.querySelectorAll('[data-action]').forEach((button) => {
     const action = button.dataset.action;
     const allowed = ACTION_ROLES[action];
     if (!allowed) return;
-
+ 
     const roleAllowed = allowed.includes(state.activeRole);
     button.hidden = !roleAllowed;
     if (roleAllowed && !isLoggedIn()) {
@@ -309,7 +310,7 @@ function applyActionVisibility() {
     }
   });
 }
-
+ 
 function renderPage() {
   const page = PAGES[state.activePage] ? state.activePage : 'overview';
   if (state.activePage !== page) {
@@ -342,13 +343,13 @@ function renderPage() {
       : '';
   }
 }
-
+ 
 async function handleIncomingEmailLink() {
   const raw = (window.location.hash || '').replace(/^#\/?/, '');
   const page = raw.split('?')[0];
   const params = hashParams();
   const token = params.get('token');
-
+ 
   if (page === 'password-reset' && token) {
     state.activePage = 'auth';
     history.replaceState(null, '', '#/auth');
@@ -357,40 +358,40 @@ async function handleIncomingEmailLink() {
     toast('ok', 'Password reset link opened', 'Token was placed into the reset form. Enter a new password and click Reset password.');
     return true;
   }
-
+ 
   return false;
 }
-
+ 
 function activeToken(role = state.activeRole) {
   return state.tokens[role];
 }
-
+ 
 function refreshToken(role = state.activeRole) {
   return state.refreshTokens[role];
 }
-
+ 
 function clearAllAuthSessions() {
   state.tokens = {};
   state.refreshTokens = {};
   state.users = {};
 }
-
+ 
 function account(role) {
   return state.accounts[role];
 }
-
+ 
 function setAccountField(role, field, val) {
   state.accounts[role] = { ...account(role), [field]: val };
   persist();
 }
-
+ 
 async function request(path, options = {}) {
   const method = options.method || 'GET';
   const role = options.role || state.activeRole;
   const headers = { ...(options.headers || {}) };
-
+ 
   if (options.body !== undefined) headers['Content-Type'] = 'application/json';
-
+ 
   if (!options.skipAuth) {
     const token = activeToken(role);
     if (!token) {
@@ -398,19 +399,19 @@ async function request(path, options = {}) {
     }
     headers.Authorization = `Bearer ${token}`;
   }
-
+ 
   const res = await fetch(apiBase() + path, { method, headers, body: options.body });
   const text = await res.text();
   let body;
   try { body = text ? JSON.parse(text) : {}; } catch { body = text; }
-
+ 
   if (!res.ok) {
     throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status, body, path, method });
   }
-
+ 
   return body;
 }
-
+ 
 async function safe(label, fn, successMessage) {
   try {
     const result = await fn();
@@ -433,32 +434,32 @@ async function safe(label, fn, successMessage) {
     return null;
   }
 }
-
+ 
 function saveApiBase() {
   state.apiBase = apiBase();
   persist();
   render();
   toast('ok', 'API base saved', state.apiBase);
 }
-
+ 
 async function health() {
   return safe('Health check', async () => {
     const res = await fetch(rootUrl() + '/health');
     return res.json();
   }, 'Backend health endpoint responded.');
 }
-
+ 
 function openDocs() {
   window.open(rootUrl() + '/docs', '_blank', 'noopener,noreferrer');
 }
-
+ 
 function setActiveRole(role) {
   state.activeRole = role;
   persist();
   render();
   toast('ok', 'Active role selected', activeToken(role) ? `Now using ${role} token for protected actions.` : `${role} selected. Login is required before protected actions. The frontend keeps only one active login session at a time.`);
 }
-
+ 
 function rememberAuth(role, result) {
   if (result?.accessToken) state.tokens[role] = result.accessToken;
   if (result?.refreshToken) state.refreshTokens[role] = result.refreshToken;
@@ -473,7 +474,7 @@ function rememberAuth(role, result) {
   }
   persist();
 }
-
+ 
 async function registerRole(role) {
   readRoleInputs(role);
   const acc = account(role);
@@ -486,10 +487,11 @@ async function registerRole(role) {
       password: acc.password,
       ...(role === 'OWNER' ? { tenantName: acc.tenantName } : {})
     };
-
+ 
   return safe(`Register ${role}`, async () => {
     const result = await request(path, { method: 'POST', body: JSON.stringify(body), skipAuth: true });
-   if (result?.verificationToken) state.verificationTokens[role] = result.verificationToken;
+    // FIX: регистрация НЕ логинит пользователя. Сохраняем только токен верификации и id, но НЕ access-токен.
+    if (result?.verificationToken) state.verificationTokens[role] = result.verificationToken;
     if (result?.tenantId && role === 'OWNER') state.tenantId = result.tenantId;
     if (result?.user?.id && role === 'OWNER') state.ownerUserId = result.user.id;
     persist();
@@ -500,21 +502,21 @@ async function registerRole(role) {
       setValue('customerEmail', acc.email);
     }
     return result;
-  }, `${role} account was registered. Check real inbox: email contains both verification link and copyable token.`);
+  }, `${role} account was registered (NOT logged in). Verify email, then click Login.`);
 }
-
+ 
 async function verifyRole(role) {
   const token = value(`verify-${role}`) || state.verificationTokens[role];
   if (!token) {
     toast('warn', `Verify ${role}`, 'Click the Verify Email button in Gmail or paste the verification token from the email.');
     return null;
   }
-
+ 
   return safe(`Verify ${role}`, () => request(`/auth/verify-email?token=${encodeURIComponent(token)}`, {
     method: 'GET', skipAuth: true
   }), `${role} email verified. You can log in now.`);
 }
-
+ 
 async function loginRole(role) {
   readRoleInputs(role);
   const acc = account(role);
@@ -534,7 +536,7 @@ async function loginRole(role) {
     return result;
   }, `Logged in as ${role}. Previous frontend session was cleared, so only this role is active.`);
 }
-
+ 
 async function logoutRole(role = state.activeRole) {
   const token = refreshToken(role);
   if (!token) {
@@ -552,7 +554,7 @@ async function logoutRole(role = state.activeRole) {
     return result;
   }, `${role} refresh token was revoked.`);
 }
-
+ 
 async function refreshCurrentToken() {
   const role = state.activeRole;
   const token = refreshToken(role);
@@ -568,7 +570,7 @@ async function refreshCurrentToken() {
     return result;
   }, `${role} access token refreshed.`);
 }
-
+ 
 async function addRoleToTenant(role) {
   if (!['MANAGER', 'STAFF', 'AUDITOR'].includes(role)) return null;
   if (!requireFrontendRole(['OWNER'], `Add ${role} to tenant`)) return null;
@@ -584,7 +586,7 @@ async function addRoleToTenant(role) {
     return result;
   }, `${role} was assigned to the OWNER tenant. Login ${role} again to load this membership.`);
 }
-
+ 
 async function removeRoleFromTenant(role) {
   if (!['MANAGER', 'STAFF', 'AUDITOR'].includes(role)) return null;
   if (!requireFrontendRole(['OWNER'], `Remove ${role} from tenant`)) return null;
@@ -599,7 +601,7 @@ async function removeRoleFromTenant(role) {
     return { message: `${role} membership removed`, membershipId };
   }, `${role} was removed from the OWNER tenant.`);
 }
-
+ 
 async function requestReset() {
   const email = value('resetEmail');
   return safe('Request password reset', async () => {
@@ -613,7 +615,7 @@ async function requestReset() {
     return result;
   }, 'Password reset email was queued. Check inbox.');
 }
-
+ 
 async function resetPassword() {
   return safe('Reset password', async () => {
     const result = await request('/auth/reset-password', {
@@ -621,9 +623,7 @@ async function resetPassword() {
       body: JSON.stringify({ token: value('resetToken'), newPassword: value('newPassword') }),
       skipAuth: true
     });
-
-    // Security UX: a password reset invalidates tokens on the backend.
-    // The demo frontend must also clear saved tokens so the user is visibly logged out.
+ 
     clearAllAuthSessions();
     state.activeRole = 'OWNER';
     setValue('resetToken', '');
@@ -632,13 +632,13 @@ async function resetPassword() {
     return result;
   }, 'Password was reset. All frontend sessions were cleared. Log in again with the new password.');
 }
-
+ 
 function requireId(name, label) {
   const val = state[name];
   if (!val) throw new Error(`${label} is missing. Create or load it first.`);
   return val;
 }
-
+ 
 async function createWarehouse(slot) {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Create warehouse')) return null;
   const isA = slot === 'A';
@@ -655,7 +655,7 @@ async function createWarehouse(slot) {
     return result;
   }, `Warehouse ${slot} created by ${state.activeRole}. Audit log written.`);
 }
-
+ 
 async function updateWarehouse(slot) {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Update warehouse')) return null;
   const isA = slot === 'A';
@@ -668,11 +668,11 @@ async function updateWarehouse(slot) {
     })
   }), `Warehouse ${slot} updated. Audit log written.`);
 }
-
+ 
 function pickList(response) {
   return response?.data || response?.items || [];
 }
-
+ 
 async function listWarehouses() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List warehouses')) return null;
   return safe('List warehouses', async () => {
@@ -683,7 +683,7 @@ async function listWarehouses() {
     return result;
   }, 'Warehouses loaded. IDs saved for next actions.');
 }
-
+ 
 async function createSupplier() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Create supplier')) return null;
   return safe('Create supplier', async () => {
@@ -697,7 +697,7 @@ async function createSupplier() {
     return result;
   }, 'Supplier created and saved. Audit log written.');
 }
-
+ 
 async function listSuppliers() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List suppliers')) return null;
   return safe('List suppliers', async () => {
@@ -707,7 +707,7 @@ async function listSuppliers() {
     return result;
   }, 'Suppliers loaded.');
 }
-
+ 
 async function createCategory() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Create category')) return null;
   return safe('Create category', async () => {
@@ -718,7 +718,7 @@ async function createCategory() {
     return result;
   }, 'Category created and saved. Audit log written.');
 }
-
+ 
 async function listCategories() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List categories')) return null;
   return safe('List categories', async () => {
@@ -728,7 +728,7 @@ async function listCategories() {
     return result;
   }, 'Categories loaded.');
 }
-
+ 
 async function createProduct() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Create product')) return null;
   return safe('Create product', async () => {
@@ -749,7 +749,7 @@ async function createProduct() {
     return result;
   }, 'Product created and saved. Audit log written.');
 }
-
+ 
 async function updateProductRules() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Update product reorder rules')) return null;
   return safe('Update product reorder rules', async () => {
@@ -763,7 +763,7 @@ async function updateProductRules() {
     });
   }, 'Product reorder rules updated. Audit log written.');
 }
-
+ 
 async function listProducts() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List products')) return null;
   return safe('List products', async () => {
@@ -773,17 +773,17 @@ async function listProducts() {
     return result;
   }, 'Products loaded.');
 }
-
+ 
 async function getProductDetails() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'Get product details')) return null;
   return safe('Get product details', () => request(`/products/${requireId('productId', 'Product ID')}`), 'Product details loaded.');
 }
-
+ 
 async function archiveProduct() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Archive product')) return null;
   return safe('Archive product', () => request(`/products/${requireId('productId', 'Product ID')}`, { method: 'DELETE' }), 'Product archived. Audit log written.');
 }
-
+ 
 async function triggerLowStockEmailDemo() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Low-stock email demo')) return null;
   return safe('Low-stock email demo', async () => {
@@ -808,7 +808,7 @@ async function triggerLowStockEmailDemo() {
     return { message: 'Low-stock condition created. Backend enqueued low-stock alert email to OWNER/MANAGER recipients.', batch: result };
   }, 'Low-stock alert email was triggered through real inventory flow.');
 }
-
+ 
 async function receiveInventory() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Receive inventory')) return null;
   return safe('Receive inventory', async () => {
@@ -828,7 +828,7 @@ async function receiveInventory() {
     return result;
   }, 'Inventory batch received. If available quantity is below reorder point, required low-stock email is queued.');
 }
-
+ 
 async function adjustInventory() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Adjust inventory')) return null;
   return safe('Adjust inventory', () => request('/inventory/adjustments', {
@@ -841,7 +841,7 @@ async function adjustInventory() {
     })
   }), 'Inventory adjustment saved. Audit log written.');
 }
-
+ 
 async function reportInventoryIssue() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Report damaged/missing stock')) return null;
   return safe('Report inventory issue', async () => {
@@ -858,7 +858,7 @@ async function reportInventoryIssue() {
     return result;
   }, 'Issue report created. MANAGER/OWNER must approve before stock changes.');
 }
-
+ 
 async function approveInventoryIssue() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Approve inventory issue')) return null;
   return safe('Approve inventory issue', () => request(`/inventory/issue-reports/${requireId('issueReportId', 'Issue Report ID')}/approve`, {
@@ -866,7 +866,7 @@ async function approveInventoryIssue() {
     body: JSON.stringify({ resolutionNote: 'Approved after manager review' })
   }), 'Issue report approved and inventory adjustment applied.');
 }
-
+ 
 async function rejectInventoryIssue() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Reject inventory issue')) return null;
   return safe('Reject inventory issue', () => request(`/inventory/issue-reports/${requireId('issueReportId', 'Issue Report ID')}/reject`, {
@@ -874,7 +874,7 @@ async function rejectInventoryIssue() {
     body: JSON.stringify({ resolutionNote: 'Rejected after manager review' })
   }), 'Issue report rejected. Stock was not changed.');
 }
-
+ 
 async function listInventoryIssues() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List inventory issues')) return null;
   return safe('List inventory issue reports', async () => {
@@ -884,7 +884,7 @@ async function listInventoryIssues() {
     return result;
   }, 'Inventory issue reports loaded.');
 }
-
+ 
 async function createReservation() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Create reservation')) return null;
   return safe('Create reservation', async () => {
@@ -902,19 +902,19 @@ async function createReservation() {
     return result;
   }, 'Reservation created. Inventory is reserved.');
 }
-
+ 
 async function confirmReservation() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Confirm reservation')) return null;
   return safe('Confirm reservation', () => request(`/reservations/${requireId('reservationId', 'Reservation ID')}/confirm`, {
     method: 'POST'
   }), 'Reservation confirmed and sale created.');
 }
-
+ 
 async function listReservations() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List reservations')) return null;
   return safe('List reservations', () => request('/reservations?limit=20'), 'Reservations loaded.');
 }
-
+ 
 async function createTransfer() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Create transfer request')) return null;
   return safe('Create transfer request', async () => {
@@ -930,22 +930,22 @@ async function createTransfer() {
     return result;
   }, 'Transfer request created with status REQUESTED. Next: OWNER/MANAGER approves it.');
 }
-
+ 
 async function approveTransfer() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Approve transfer')) return null;
   return safe('Approve transfer', () => request(`/transfers/${requireId('transferId', 'Transfer ID')}/approve`, { method: 'POST' }), 'Transfer approved. Next: dispatch it.');
 }
-
+ 
 async function dispatchTransfer() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Dispatch transfer')) return null;
   return safe('Dispatch transfer', () => request(`/transfers/${requireId('transferId', 'Transfer ID')}/dispatch`, { method: 'POST' }), 'Transfer is now IN_TRANSIT. Next: receive it at Warehouse B.');
 }
-
+ 
 async function receiveTransfer() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF'], 'Receive transfer')) return null;
   return safe('Receive transfer', () => request(`/transfers/${requireId('transferId', 'Transfer ID')}/receive`, { method: 'POST' }), 'Transfer received. Stock moved atomically and transfer receipt email queued.');
 }
-
+ 
 async function cancelTransfer() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Cancel transfer')) return null;
   return safe('Cancel transfer', () => request(`/transfers/${requireId('transferId', 'Transfer ID')}/cancel`, {
@@ -953,7 +953,7 @@ async function cancelTransfer() {
     body: JSON.stringify({ reason: 'Cancelled from frontend demo' })
   }), 'Transfer cancelled before receipt.');
 }
-
+ 
 async function listTransfers() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'STAFF', 'AUDITOR'], 'List transfers')) return null;
   return safe('List transfers', async () => {
@@ -963,12 +963,12 @@ async function listTransfers() {
     return result;
   }, 'Transfers loaded. Latest transfer ID saved if missing.');
 }
-
+ 
 async function listSales() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'List sales')) return null;
   return safe('List sales', () => request('/sales?limit=20'), 'Sales loaded.');
 }
-
+ 
 async function createPurchaseOrder() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Create purchase order')) return null;
   return safe('Create purchase order', async () => {
@@ -985,52 +985,52 @@ async function createPurchaseOrder() {
     return result;
   }, 'Purchase order created. Audit log written; confirmation email is sent after Confirm PO.');
 }
-
+ 
 async function confirmPurchaseOrder() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Confirm purchase order')) return null;
   return safe('Confirm purchase order', () => request(`/purchase-orders/${requireId('purchaseOrderId', 'Purchase Order ID')}/confirm`, {
     method: 'POST'
   }), 'Purchase order confirmed and required supplier email queued.');
 }
-
+ 
 async function cancelPurchaseOrder() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Cancel purchase order')) return null;
   return safe('Cancel purchase order', () => request(`/purchase-orders/${requireId('purchaseOrderId', 'Purchase Order ID')}/cancel`, {
     method: 'POST'
   }), 'Purchase order cancelled. Audit log written.');
 }
-
+ 
 async function listPurchaseOrders() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'List purchase orders')) return null;
   return safe('List purchase orders', () => request('/purchase-orders?limit=20'), 'Purchase orders loaded.');
 }
-
-
+ 
+ 
 async function lowStock() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Reports')) return null;
   return safe('Low stock report', () => request('/reports/low-stock'), 'Low stock report loaded.');
 }
-
+ 
 async function deadStockReport() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Reports')) return null;
   return safe('Dead stock report', () => request('/reports/dead-stock'), 'Dead stock report loaded.');
 }
-
+ 
 async function forecast() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Forecast reports')) return null;
   return safe('Forecast reorder suggestions', () => request('/reports/forecast/reorder-suggestions'), 'Forecast suggestions loaded.');
 }
-
+ 
 async function inventorySnapshot() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Inventory snapshot')) return null;
   return safe('Inventory snapshot', () => request('/reports/inventory-snapshot'), 'Inventory snapshot loaded.');
 }
-
+ 
 async function getDeadStockPolicy() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Dead-stock policy')) return null;
   return safe('Get dead-stock policy', () => request('/reports/dead-stock-policy'), 'Dead-stock policy loaded.');
 }
-
+ 
 async function updateDeadStockPolicy() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Update dead-stock policy')) return null;
   return safe('Update dead-stock policy', () => request('/reports/dead-stock-policy', {
@@ -1042,27 +1042,27 @@ async function updateDeadStockPolicy() {
     })
   }), 'Tenant dead-stock policy updated.');
 }
-
+ 
 async function runDeadStockDecay() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Dead-stock decay')) return null;
   return safe('Run dead-stock decay', () => request('/reports/dead-stock-decay/run', { method: 'POST' }), 'Dead-stock price decay applied.');
 }
-
+ 
 async function triggerDeadStock() {
   if (!requireFrontendRole(['OWNER', 'MANAGER'], 'Dead-stock queue trigger')) return null;
   return safe('Trigger dead-stock queue', () => request('/jobs/dead-stock/trigger', { method: 'POST' }), 'Dead-stock job enqueued.');
 }
-
+ 
 async function queueStatus() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Queue status')) return null;
   return safe('Queue status', () => request('/jobs/status'), 'Queue counts loaded.');
 }
-
+ 
 async function auditLogs() {
   if (!requireFrontendRole(['OWNER', 'MANAGER', 'AUDITOR'], 'Audit logs')) return null;
   return safe('Tenant audit logs', () => request('/audit-logs?limit=20'), 'Tenant audit logs loaded.');
 }
-
+ 
 async function platformTenants() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Platform admin')) return null;
   return safe('Platform list tenants', async () => {
@@ -1074,17 +1074,17 @@ async function platformTenants() {
     return result;
   }, 'Tenants loaded by SUPERADMIN.');
 }
-
+ 
 async function platformMetrics() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Platform metrics')) return null;
   return safe('Platform metrics', () => request('/platform/metrics', { role: 'SUPERADMIN' }), 'Platform metrics loaded.');
 }
-
+ 
 async function platformAuditLogs() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Platform audit logs')) return null;
   return safe('Platform audit logs', () => request('/platform/audit-logs?limit=20', { role: 'SUPERADMIN' }), 'Platform audit logs loaded.');
 }
-
+ 
 async function suspendTenant() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Suspend tenant')) return null;
   const tenantId = value('platformTenantId') || state.tenantId;
@@ -1092,7 +1092,7 @@ async function suspendTenant() {
     method: 'PATCH', role: 'SUPERADMIN', body: JSON.stringify({ reason: value('suspendReason') || undefined })
   }), 'Tenant suspended by SUPERADMIN. Reactivate it before continuing tenant workflows.');
 }
-
+ 
 async function reactivateTenant() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Reactivate tenant')) return null;
   const tenantId = value('platformTenantId') || state.tenantId;
@@ -1100,7 +1100,7 @@ async function reactivateTenant() {
     method: 'PATCH', role: 'SUPERADMIN'
   }), 'Tenant reactivated. Tenant users can work again.');
 }
-
+ 
 async function forcePasswordReset() {
   if (!requireFrontendRole(['SUPERADMIN'], 'Force password reset')) return null;
   const userId = value('forceResetUserId') || state.ownerUserId;
@@ -1108,7 +1108,7 @@ async function forcePasswordReset() {
     method: 'PATCH', role: 'SUPERADMIN', body: JSON.stringify({ reason: value('forceResetReason') || undefined })
   }), 'Password reset email was forced by SUPERADMIN.');
 }
-
+ 
 function readRoleInputs(role) {
   const acc = account(role);
   ['email', 'username', 'password', 'tenantName', 'setupKey'].forEach((field) => {
@@ -1118,7 +1118,7 @@ function readRoleInputs(role) {
   state.accounts[role] = acc;
   persist();
 }
-
+ 
 function renderRoleTabs() {
   $('roleTabs').innerHTML = ROLES.map((role) => {
     const active = role === state.activeRole ? 'active' : '';
@@ -1132,7 +1132,7 @@ function renderRoleTabs() {
     `;
   }).join('');
 }
-
+ 
 function renderRoleCards() {
   $('roleCards').innerHTML = ROLES.map((role) => {
     const acc = account(role);
@@ -1143,7 +1143,7 @@ function renderRoleCards() {
     const membershipText = state.memberships[role]?.length
       ? state.memberships[role].map((m) => `${m.role}:${short(m.tenantId)}`).join(', ')
       : 'no membership loaded';
-
+ 
     return `
       <div class="card col-4">
         <h4>${role}</h4>
@@ -1172,11 +1172,11 @@ function renderRoleCards() {
     `;
   }).join('');
 }
-
+ 
 function short(id) {
   return id ? String(id).slice(0, 8) : '-';
 }
-
+ 
 function renderPills() {
   const values = [
     ['tenant', state.tenantId],
@@ -1196,7 +1196,7 @@ function renderPills() {
     <span class="pill ${val ? 'ok' : 'warn'}">${escapeHtml(label)}: <span class="mono">${escapeHtml(short(val))}</span></span>
   `).join('');
 }
-
+ 
 function renderStatus() {
   const role = state.activeRole;
   const logged = Boolean(activeToken(role));
@@ -1216,7 +1216,7 @@ function renderStatus() {
     </div>
   `;
 }
-
+ 
 function syncInputsFromState() {
   setValue('apiBase', state.apiBase);
   setValue('platformTenantId', value('platformTenantId') || state.tenantId);
@@ -1225,7 +1225,7 @@ function syncInputsFromState() {
   if (!value('supplierEmail')) setValue('supplierEmail', account('OWNER').email);
   if (!value('customerEmail')) setValue('customerEmail', account('OWNER').email);
 }
-
+ 
 function render() {
   syncInputsFromState();
   renderRoleTabs();
@@ -1236,7 +1236,7 @@ function render() {
   renderPage();
   applyActionVisibility();
 }
-
+ 
 const ACTIONS = {
   saveApiBase,
   health,
@@ -1298,7 +1298,7 @@ const ACTIONS = {
   logoutCurrent: () => logoutRole(state.activeRole),
   clearLogs: () => { logs = []; renderLogs(); output('Logs cleared.'); }
 };
-
+ 
 document.addEventListener('click', (event) => {
   const navLink = event.target.closest('[data-page-link]');
   if (navLink) {
@@ -1312,13 +1312,13 @@ document.addEventListener('click', (event) => {
     setPage(page);
     return;
   }
-
+ 
   const roleTab = event.target.closest('[data-role-tab]');
   if (roleTab) {
     setActiveRole(roleTab.dataset.roleTab);
     return;
   }
-
+ 
   const roleAction = event.target.closest('[data-role-action]');
   if (roleAction) {
     const role = roleAction.dataset.role;
@@ -1332,7 +1332,7 @@ document.addEventListener('click', (event) => {
     if (action === 'remove') removeRoleFromTenant(role);
     return;
   }
-
+ 
   const actionButton = event.target.closest('[data-action]');
   if (actionButton) {
     const actionName = actionButton.dataset.action;
@@ -1342,7 +1342,7 @@ document.addEventListener('click', (event) => {
     if (action) action();
   }
 });
-
+ 
 document.addEventListener('input', (event) => {
   const input = event.target;
   const match = input.id.match(/^(email|username|password|tenantName|setupKey)-(.+)$/);
@@ -1353,14 +1353,14 @@ document.addEventListener('input', (event) => {
     renderStatus();
   }
 });
-
+ 
 window.addEventListener('hashchange', () => {
   const page = getPageFromLocation();
   state.activePage = page;
   persist();
   render();
 });
-
+ 
 window.addEventListener('load', async () => {
   render();
   const handled = await handleIncomingEmailLink();
