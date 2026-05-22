@@ -489,7 +489,10 @@ async function registerRole(role) {
 
   return safe(`Register ${role}`, async () => {
     const result = await request(path, { method: 'POST', body: JSON.stringify(body), skipAuth: true });
-    rememberAuth(role, result);
+   if (result?.verificationToken) state.verificationTokens[role] = result.verificationToken;
+    if (result?.tenantId && role === 'OWNER') state.tenantId = result.tenantId;
+    if (result?.user?.id && role === 'OWNER') state.ownerUserId = result.user.id;
+    persist();
     setValue(`verify-${role}`, state.verificationTokens[role] || '');
     if (role === 'OWNER') {
       setValue('resetEmail', acc.email);
